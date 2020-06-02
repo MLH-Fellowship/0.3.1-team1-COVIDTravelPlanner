@@ -1,4 +1,4 @@
-# 0.3.1-team-1-COVIDTravelPlanner
+# COVIDTravelPlanner
 _Hackathon project repository for pod 0.3.1 team 1_
 
 ## The Project

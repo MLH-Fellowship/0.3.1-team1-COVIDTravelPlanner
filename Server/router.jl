@@ -14,14 +14,14 @@ end
 
 function getUser(req::HTTP.Request)
     data = JSON2.read(IOBuffer(HTTP.payload(req)))
-    token, email = data.token, data.email
-    r = findall(x -> (x.token == token && x.email == email), USERS)
+    token = data.token
+    r = findall(x -> (x.token == token), USERS)
     if isempty(r)
       return HTTP.Response(400, "{ \"message\": \"user not found\" }")
     else
+      println("log: get user $(r[1].email)")
       return HTTP.Response(200, JSON2.write(r[1]))
     end
-    println("log: get user $(user.email)")
 end
 
 function login(req::HTTP.Request)

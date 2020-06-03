@@ -18,7 +18,7 @@ Clone the repository first.
 3. Enter the Pkg Mode (type `]`)
 4. Install dependencies using:  
 ```instantiate()```
-5. Leave Pkg mode (`ctrl + d` | `⌘ + d`)
+5. Leave Pkg mode (`ctrl + c` | `⌘ + c`)
 6. Start the server using:  
 ```bin/server```
 

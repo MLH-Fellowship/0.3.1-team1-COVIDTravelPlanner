@@ -37,7 +37,37 @@ function login(req::HTTP.Request)
   end
 end
 
+function add_schedule(req::HTTP.Request)
+  data = JSON2.read(IOBuffer(HTTP.payload(req)))
+  token, starttime, endtime, place = data.token, data.starttime, data.endtime, data.place
+  r = findall(x -> (x.token == token), USERS)
+  if isempty(r)
+    return HTTP.Response(400, "{ \"message\": \"user not found\" }")
+  else
+    user  = r[1]
+    pred = prediction(place, starttime, endtime)
+    sched = Schedule(getNextScheduleId(), user.id, starttime, endtime, place, pred, Int(round(time())))
+    SCHEDULES[sched.id] = sched
+    return HTTP.Response(200, JSON2.write(sched))
+  end
+end
+
+function get_shedules(req::HTTP.Request)
+  data = JSON2.read(IOBuffer(HTTP.payload(req)))
+  token = data.token
+  r = findall(x -> (x.token == token), USERS)
+  if isempty(r)
+    return HTTP.Response(400, "{ \"message\": \"user not found\" }")
+  else
+    user  = r[1]
+    idxs = findall(x -> (x.uid == user.id), SCHEDULES)
+    return HTTP.Response(200, JSON2.write(SCHEDULES[idxs]))
+  end
+end
+
 HTTP.@register(ROUTER, "POST",   "/api/v1/register", createUser)
 HTTP.@register(ROUTER, "POST",   "/api/v1/login", login)
 HTTP.@register(ROUTER, "POST",   "/api/v1/user", getUser)
+HTTP.@register(ROUTER, "POST",   "/api/v1/schedule/add", add_schedule)
+HTTP.@register(ROUTER, "POST",   "/api/v1/schedule/list", get_shedules)
 

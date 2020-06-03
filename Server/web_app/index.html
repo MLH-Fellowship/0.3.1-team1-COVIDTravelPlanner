@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Home | Covid19 Travel Planner</title>
+
+        <link href="main.css" rel="stylesheet">
+
+        <!-- Bootstrap -->
+        <link href="bootstrap.min.css" rel="stylesheet">
+
+        <script src="Chart.min.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <canvas id="casesGraph"></canvas>
+        </div>
+
+        <script>
+            let graphCanvas = document.getElementById('casesGraph').getContext('2d');
+            let graph = new Chart(graphCanvas, {
+                type: 'line',
+                data: {
+                    labels: ['jan', 'feb', 'march', 'april', 'may', 'june', 'july', 'august', 'september'],
+                    datasets:[{
+                        label:'Population',
+                        data: [
+                            122,
+                            123,
+                            123213,
+                            123213,
+                            12321,
+                            123,
+                            123213,
+                            12321,
+                            123,
+                        ],
+                        fill:false,
+                        borderColor:'#ff00ff',
+                        borderWidth:1,
+                    }],
+                },
+                options: {}
+            });
+        </script>
+
+        <script src="jquery.min.js"></script>
+        <script src="popper.min.js"></script>
+        <script src="bootstrap.min.js"></script>
+    </body>
+</html>

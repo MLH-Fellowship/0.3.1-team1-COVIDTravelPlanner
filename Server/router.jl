@@ -74,7 +74,7 @@ function get_status(req::HTTP.Request)
   district, state = data.district, data.state
   infected, rd = prediction(state, district, [1,2,3,4,5,6,7])
   out = Dict("infected" => infected, "rd" => rd)
-  return HTTP.Response(200, JSON2.write(out))
+  return HTTP.Response(200, [Pair("Access-Control-Allow-Origin", "*")]; body=JSON2.write(out))
 end
 
 HTTP.@register(ROUTER, "POST",   "/api/v1/register", createUser)

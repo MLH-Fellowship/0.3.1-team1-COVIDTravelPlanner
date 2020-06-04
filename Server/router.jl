@@ -93,10 +93,16 @@ function get_status(req::HTTP.Request)
   return HTTP.Response(200, [Pair("Access-Control-Allow-Origin", "*")]; body=JSON2.write(out))
 end
 
+function index(req::HTTP.Request)
+  file = "Server/app" * HTTP.unescapeuri(req.target[1:end])
+  return isfile(file) ? HTTP.Response(200, read(file)) : HTTP.Response(404)
+end
+
 HTTP.@register(ROUTER, "POST",   "/api/v1/register", createUser)
 HTTP.@register(ROUTER, "POST",   "/api/v1/login", login)
 HTTP.@register(ROUTER, "POST",   "/api/v1/user", getUser)
 HTTP.@register(ROUTER, "POST",   "/api/v1/schedule/add", add_schedule)
 HTTP.@register(ROUTER, "POST",   "/api/v1/schedule/list", get_shedules)
 HTTP.@register(ROUTER, "POST",   "/api/v1/status", get_status)
+HTTP.@register(ROUTER, "GET",    "/*", index)
 

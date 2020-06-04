@@ -32,21 +32,25 @@ function login(req::HTTP.Request)
   else
     token = rand(UInt32)
     USERS[r[1]].token = token
-    @show USERS[r[1]]
     return HTTP.Response(200, "{ \"token\": $(token) }")
   end
 end
 
+function get_day_offset(epoch)
+  d = unix2datetime(epoch)
+  return day(d) - 4 # 4 means 4 june
+end
+
 function add_schedule(req::HTTP.Request)
   data = JSON2.read(IOBuffer(HTTP.payload(req)))
-  token, starttime, endtime, place = data.token, data.starttime, data.endtime, data.place
+  token, starttime, endtime, state, district = data.token, data.starttime, data.endtime, data.state, data.district
   r = findall(x -> (x.token == token), USERS)
   if isempty(r)
     return HTTP.Response(400, "{ \"message\": \"user not found\" }")
   else
     user  = USERS[r[1]]
-    pred = prediction(place, starttime, endtime)
-    sched = Schedule(getNextScheduleId(), user.id, starttime, endtime, place, pred, Int(round(time())))
+    pred, _ = prediction(state, district, get_day_offset(starttime))
+    sched = Schedule(getNextScheduleId(), user.id, starttime, endtime, state * "_" * district, pred[1], Int(round(time())))
     SCHEDULES[sched.id] = sched
     return HTTP.Response(200, JSON2.write(sched))
   end
@@ -69,9 +73,19 @@ function get_shedules(req::HTTP.Request)
   end
 end
 
+
+function get_status(req::HTTP.Request)
+  data = JSON2.read(IOBuffer(HTTP.payload(req)))
+  district, state = data.district, data.state
+  infected, rd = prediction(state, district, [1,2,3,4,5,6,7])
+  out = Dict("infected" => infected, "rd" => rd)
+  return HTTP.Response(200, [Pair("Access-Control-Allow-Origin", "*")]; body=JSON2.write(out))
+end
+
 HTTP.@register(ROUTER, "POST",   "/api/v1/register", createUser)
 HTTP.@register(ROUTER, "POST",   "/api/v1/login", login)
 HTTP.@register(ROUTER, "POST",   "/api/v1/user", getUser)
 HTTP.@register(ROUTER, "POST",   "/api/v1/schedule/add", add_schedule)
 HTTP.@register(ROUTER, "POST",   "/api/v1/schedule/list", get_shedules)
+HTTP.@register(ROUTER, "POST",   "/api/v1/status", get_status)
 

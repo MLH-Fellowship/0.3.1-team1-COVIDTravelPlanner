@@ -13,7 +13,7 @@ Data sourced from https://api.covid19india.org/.
 - Server code is present in [`Server`](Server/) directory
 - Datasets and the preprocessing script used are present in [`Dataset`](Dataset/) directory
 - Trained models are in [`BSON`](https://github.com/JuliaIO/BSON.jl) format in the [`Server/data`](Server/data) directory
-- Source of android application is present in the [`Android/`](Android/) directory with the APK file in [`Android/dist`](Android/dist) directory
+- Source of react native application is present in the [`Application/`](Application/) directory with the build files (APK et al) in [`Application/dist`](Application/dist) directory
 
 ![webapp](Screenshots/webapp.png)
 
@@ -24,7 +24,7 @@ Data sourced from https://api.covid19india.org/.
 ## Tech Stack
 
 - Julia : For the backend
-- React Native : For the Android Application
+- React Native : For the Application
 - DiffEqFlux : For training district wise models
 
 ## Local Setup
@@ -44,5 +44,5 @@ Data sourced from https://api.covid19india.org/.
 	julia --project=./Server Server/server.jl
 ```
 
-4. _TODO: Android application instructions_
+4. _TODO: application instructions_
 

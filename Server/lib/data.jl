@@ -24,6 +24,8 @@ function clean_data(file)
             recovered = Array(dsplit_2[dsplit_2.category .== "recovered", :])[4:end]
             deceased = Array(dsplit_2[dsplit_2.category .== "deceased", :])[4:end]
             
+            infected = infected .- recovered .- deceased
+            
             idx = findfirst((infected .> 10) .& (.!ismissing.(infected)))
             if isnothing(idx)
                 dataset[state][dn] = nothing

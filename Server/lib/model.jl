@@ -1,4 +1,4 @@
-function construct_model(t_train, t_test; hidden_dim = 10, test_model = true)
+function construct_model(t_train, t_test, u0_2, u0_3; hidden_dim = 10, test_model = true)
     ann = Chain(Dense(4, hidden_dim, relu), Dense(hidden_dim, 1))
     p1, re = Flux.destructure(ann)
     p2 = Float64[0.5, 0.03]
@@ -6,7 +6,7 @@ function construct_model(t_train, t_test; hidden_dim = 10, test_model = true)
     
     ps = Flux.params(p3)
     
-    u0 = Float64[327000000.0, 518, 7, 10]
+    u0 = Float64[25.0e6, u0_2, u0_3, 10]
     
     function QSIR(du, u, p, t)
         β = abs(p[length(p1) + 1])

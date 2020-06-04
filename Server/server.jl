@@ -2,7 +2,10 @@ using HTTP, JSON2, Sockets
 using Dates
 const ROUTER = HTTP.Router()
 
-include("diffeqflux.jl")
+include("lib/Covid19Modelling.jl")
+
+using .Covid19Modelling
+
 include("models.jl")
 include("router.jl")
 

@@ -1,3 +1,4 @@
+using NNlib, Flux, LinearAlgebra, DiffEqBase
 
 function createUser(req::HTTP.Request)
   data = JSON2.read(IOBuffer(HTTP.payload(req)))
@@ -49,8 +50,12 @@ function add_schedule(req::HTTP.Request)
     return HTTP.Response(400, "{ \"message\": \"user not found\" }")
   else
     user  = USERS[r[1]]
-    pred, _ = prediction(state, district, get_day_offset(starttime))
-    sched = Schedule(getNextScheduleId(), user.id, starttime, endtime, state * "_" * district, pred[1], Int(round(time())))
+    pred = prediction(state, district, get_day_offset(starttime))
+    if pred isa Nothing
+      sched = Schedule(getNextScheduleId(), user.id, starttime, endtime, state * "_" * district, 0, Int(round(time())))
+    else
+      sched = Schedule(getNextScheduleId(), user.id, starttime, endtime, state * "_" * district, pred[1][1], Int(round(time())))
+    end
     SCHEDULES[sched.id] = sched
     return HTTP.Response(200, JSON2.write(sched))
   end
@@ -77,7 +82,13 @@ end
 function get_status(req::HTTP.Request)
   data = JSON2.read(IOBuffer(HTTP.payload(req)))
   district, state = data.district, data.state
-  infected, rd = prediction(state, district, [1,2,3,4,5,6,7])
+  vector = Vector(collect(1:7))
+  pred = Covid19Modelling.prediction(state, district, vector)
+  if pred isa Nothing
+    infected, rd = zeros(7), zeros(7)
+  else
+    infected, rd = pred
+  end
   out = Dict("infected" => infected, "rd" => rd)
   return HTTP.Response(200, [Pair("Access-Control-Allow-Origin", "*")]; body=JSON2.write(out))
 end

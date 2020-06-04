@@ -43,6 +43,13 @@ function updateData(data){
     recDeaths.innerHTML = data.rd[0];
 }
 
+function showSelectedDate(slider){
+    console.log("hello");
+    sidebarDate.innerHTML = moment().add(slider.value, 'day').format('DD MMMM YY');
+    confirmedCases.innerHTML = predictionGraph.data.datasets[0].data[slider.value];
+    recDeaths.innerHTML = predictionGraph.data.datasets[1].data[slider.value];
+}
+
 var searchBar = document.getElementById('loc-searchbar');
 searchBar.addEventListener('keyup', function(event){
     if (event.keyCode === 13) {
@@ -68,6 +75,7 @@ var predictionGraph = new Chart(ctx, {
         labels: x,
         datasets: [{
             label: 'predicted cases',
+            data:[105,108,112,115,115,117,117],
             backgroundColor: [
                 'rgba(153, 102, 255, 0.0)',
             ],
@@ -78,6 +86,7 @@ var predictionGraph = new Chart(ctx, {
         },
         {
             label: 'recovered + deaths',
+            data:[105,108,112,115,115,117,117],
             backgroundColor: [
                 'rgba(153, 102, 255, 0.0)',
             ],
@@ -91,9 +100,12 @@ var predictionGraph = new Chart(ctx, {
         scales: {
             yAxes: [{
                 ticks: {
-                    beginAtZero: true
+                    beginAtZero: false
                 }
-            }]
+            }],
+            ticks:{
+                display:true,
+            }
         }
     }
 });

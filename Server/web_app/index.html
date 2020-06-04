@@ -2,51 +2,67 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Home | Covid19 Travel Planner</title>
 
-        <link href="main.css" rel="stylesheet">
 
+        <!-- Local scripts -->
+        <link rel="stylesheet" href="css/main.css">
         <!-- Bootstrap -->
-        <link href="bootstrap.min.css" rel="stylesheet">
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <script src="js/jquery.min.js"></script>
+        <script src="js/popper.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
 
-        <script src="Chart.min.js"></script>
+        <!-- Here Map API -->
+        <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://js.api.here.com/v3/3.1/mapsjs-ui.js" type="text/javascript" charset="utf-8"></script>
+        <!-- <script src="https://unpkg.com/tangram@0.15.1/dist/tangram.min.js"></script> -->
+        <link rel="stylesheet" type="text/css" href="https://js.api.here.com/v3/3.1/mapsjs-ui.css" />
     </head>
     <body>
-        <div class="container">
-            <canvas id="casesGraph"></canvas>
+        <nav class="sidenav">
+            <div class="sidebar-header">
+                Hello There
+            </div>
+        </nav>
+        <div class="main">
+            <div id="mapContainer" class="main"></div>
         </div>
-
         <script>
-            let graphCanvas = document.getElementById('casesGraph').getContext('2d');
-            let graph = new Chart(graphCanvas, {
-                type: 'line',
-                data: {
-                    labels: ['jan', 'feb', 'march', 'april', 'may', 'june', 'july', 'august', 'september'],
-                    datasets:[{
-                        label:'Population',
-                        data: [
-                            122,
-                            123,
-                            123213,
-                            123213,
-                            12321,
-                            123,
-                            123213,
-                            12321,
-                            123,
-                        ],
-                        fill:false,
-                        borderColor:'#ff00ff',
-                        borderWidth:1,
-                    }],
-                },
-                options: {}
+            $.get('http://www.geoplugin.net/json.gp?format=json', function(data){
+                data = JSON.parse(data);
+                latitude = data.geoplugin_latitude;
+                longitude = data.geoplugin_longitude;
+                map.setCenter({lat:latitude, lng:longitude});
             });
-        </script>
+            var platform = new H.service.Platform({
+                'apikey': 'aP97iFmEaGPuQz1aW6x1XRYbXGQIEwnzY0U9nSn_X_c'
+            });
+            var defaultLayers = platform.createDefaultLayers();
+            var map = new H.Map(
+                document.getElementById('mapContainer'),
+                defaultLayers.vector.normal.map,
+                {
+                    zoom: 10,
+                    center: { lat: 0, lng: 0 }
+                }
+            );
 
-        <script src="jquery.min.js"></script>
-        <script src="popper.min.js"></script>
-        <script src="bootstrap.min.js"></script>
+            var mapEvents = new H.mapevents.MapEvents(map);
+            map.addEventListener('tap', function(evt) {
+                // Log 'tap' and 'mouse' events:
+                console.log(evt.type, evt.currentPointer.type);
+            });
+            var behavior = new H.mapevents.Behavior(mapEvents);
+            function f(){
+                var baseLayer = map.getBaseLayer();
+                baseLayer.getProvider().setStyle(new H.map.Style(style));
+            }
+            var mapUI = H.ui.UI.createDefault(map, defaultLayers);
+        </script>
+        <!-- <button type="button" name="button" onclick="f()"></button> -->
     </body>
 </html>

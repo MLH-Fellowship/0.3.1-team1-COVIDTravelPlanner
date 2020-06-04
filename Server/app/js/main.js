@@ -1,24 +1,46 @@
 
-function predict(map, searchService, query, ){
+function predict(map, searchService, query){
     searchService.geocode({
         q: query,
     }, (result) => {
         // Add a marker for each location found
         result.items.forEach((item) => {
+            if(item.address.countryCode != "IND"){
+                alert("Current version supports Indian districts only!");
+                return;
+            }
             map.removeObjects(map.getObjects())
             map.addObject(new H.map.Marker(item.position));
             map.setCenter(item.position);
 
-            $.get('http://127.0.0.1:8087/api/v1/status', {
-                state: item.address.state,
-                district: item.address.city
-            }, function(data){
-                console.log(data);
-            }).fail(function(){
-                console.log("error");
+            $.ajax({
+                type: 'GET',
+                url:'http://127.0.0.1:8081/api/v1/status/',
+                data: {
+                    state: item.address.state,
+                    district: item.address.city
+                },
+                headers: {
+                    'mozSystem': true,
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods':'PUT, GET, POST',
+                    'Access-Control-Allow-Headers':'Origin, X-Requested-With, Content-Type, Accept'
+                },
+                success: function(data){
+                    data = JSON.parse(data);
+                    updateData(data);
+                }
             });
         }, alert);
     });
+}
+
+function updateData(data){
+    predictionGraph.data.datasets[0].data = data.infected;
+    predictionGraph.data.datasets[1].data = data.rd;
+    predictionGraph.update();
+    confirmedCases.innerHTML = data.infected[0];
+    recDeaths.innerHTML = data.rd[0];
 }
 
 var searchBar = document.getElementById('loc-searchbar');
@@ -29,8 +51,10 @@ searchBar.addEventListener('keyup', function(event){
         predict(map, searchService, query);
     }
 })
-
-document.getElementById('sidebar-date').innerHTML = moment().format("DD MMMM YY");
+var sidebarDate = document.getElementById('sidebar-date');
+sidebarDate.innerHTML = moment().format("DD MMMM YY");
+var confirmedCases = document.getElementById('confirmed-cases');
+var recDeaths = document.getElementById('recovered-deaths');
 
 // Set up the prediction graph for the first time
 var ctx = document.getElementById('prediction-graph').getContext('2d');
@@ -38,13 +62,12 @@ var x = [];
 for (var i = 0; i < 7; i++) {
     x[i] = moment().add(i, 'day').format('DD MMM');
 }
-var predictionChart = new Chart(ctx, {
+var predictionGraph = new Chart(ctx, {
     type: 'line',
     data: {
         labels: x,
         datasets: [{
             label: 'predicted cases',
-            data: [12, 19, 3, 2, 8, 3, 10],
             backgroundColor: [
                 'rgba(153, 102, 255, 0.0)',
             ],
@@ -55,7 +78,6 @@ var predictionChart = new Chart(ctx, {
         },
         {
             label: 'recovered + deaths',
-            data: [1, 10, 3, 5, 2, 3, 10],
             backgroundColor: [
                 'rgba(153, 102, 255, 0.0)',
             ],

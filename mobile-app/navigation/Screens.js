@@ -15,6 +15,10 @@ import Profile from "../screens/Profile";
 import Register from "../screens/Register";
 import Elements from "../screens/Elements";
 import Articles from "../screens/Articles";
+
+import LoginRegister from "../screens/LoginRegister";
+import Dashboard from "../screens/Dashboard";
+import Schedule from "../screens/Schedule";
 // drawer
 import CustomDrawerContent from "./Menu";
 
@@ -112,19 +116,16 @@ function ProfileStack(props) {
             headerMode="screen">
             <Stack.Screen
                 name="Profile"
-                component={Profile}
+                component={Schedule}
                 options={{
                     header: ({ navigation, scene }) => (
                         <Header
-                            transparent
-                            white
-                            title="Profile"
+                            title="Schedule"
                             navigation={navigation}
                             scene={scene}
                         />
                     ),
-                    cardStyle: { backgroundColor: "#FFFFFF" },
-                    headerTransparent: true,
+                    cardStyle: { backgroundColor: "#F8F9FE" },
                 }}
             />
             <Stack.Screen
@@ -153,13 +154,11 @@ function HomeStack(props) {
         <Stack.Navigator mode="card" headerMode="screen">
             <Stack.Screen
                 name="Home"
-                component={Home}
+                component={Dashboard}
                 options={{
                     header: ({ navigation, scene }) => (
                         <Header
                             title="Home"
-                            search
-                            options
                             navigation={navigation}
                             scene={scene}
                         />
@@ -235,7 +234,7 @@ function AppStack(props) {
             initialRouteName="Home">
             <Drawer.Screen name="Home" component={HomeStack} />
             <Drawer.Screen name="Profile" component={ProfileStack} />
-            <Drawer.Screen name="Account" component={Register} />
+            <Drawer.Screen name="Account" component={LoginRegister} />
             <Drawer.Screen name="Elements" component={ElementsStack} />
             <Drawer.Screen name="Articles" component={ArticlesStack} />
         </Drawer.Navigator>

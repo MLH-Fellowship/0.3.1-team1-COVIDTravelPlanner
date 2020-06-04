@@ -26,3 +26,5 @@ function update(r::RunningAverageMeter, val)
 end
 
 Zygote.@nograd update
+
+format_string(s) = replace(lowercase(s), " " => "_")

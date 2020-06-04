@@ -8,12 +8,13 @@ using DiffEqFlux
 using LaTeXStrings
 using Zygote
 using BSON
+using LinearAlgebra
 
 include("utils.jl")
+include("data.jl")
 include("model.jl")
 include("train.jl")
 
-export train, inference, construct_model
-export RunningAverageMeter
+export train_all_districts, prediction
 
 end

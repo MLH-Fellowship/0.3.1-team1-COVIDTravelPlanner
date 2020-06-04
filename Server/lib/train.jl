@@ -64,3 +64,35 @@ function inference(prob, u0, p, t)
     
     return S_NN, I_NN, R_NN, T_NN
 end
+
+function train_all_districts(file; each_epochs = 200)
+    data_all = clean_data(file)
+    avg_meter = RunningAverageMeter()
+    for state in keys(data_all)
+        data_state = data_all[state]
+        @info "Starting to train models for State: $state"
+        for district in keys(data_state)
+            df = data_state[district]
+            if isnothing(df)
+                continue
+            end
+            filepath = joinpath(@__DIR__, "../data/" * state * "_" * district * ".bson")
+            @info "District $district"
+            t_train = df["time_train"]
+            t_test = df["time_test"]
+            ps, re, u0, prob, p3, plen =
+                construct_model(t_train, t_test, hidden_dim = 30, test_model = false)
+            opt = ADAM(1e-2)
+            u0, p = train(prob, t_train, u0, p3, dat, each_epochs, opt, avg_meter, plen,
+                          cont_train = false)
+            BSON.@save filepath prob u0 p t_train t_test
+            @info "Saved model to $filepath"
+        end
+    end
+end
+
+prediction(state::String, district::String, day_num::Int) =
+    prediction(state, district, [day_num])
+
+function prediction(state::String, district::String, day_num::Vector{Int})
+end

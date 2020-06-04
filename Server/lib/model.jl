@@ -1,5 +1,4 @@
-function construct_model(tspan, tspan_train, tspan_test, dsize_train, dsize_test;
-                         hidden_dim = 10, test_model = true)
+function construct_model(t_train, t_test; hidden_dim = 10, test_model = true)
     ann = Chain(Dense(4, hidden_dim, relu), Dense(hidden_dim, 1))
     p1, re = Flux.destructure(ann)
     p2 = Float64[0.5, 0.03]
@@ -18,14 +17,12 @@ function construct_model(tspan, tspan_train, tspan_test, dsize_train, dsize_test
         du[4] = abs(re(p[1:length(p1)])(u)[1] * u[2] / u0[1])
     end
     
+    tspan = (1.0, maximum(t_test))
     prob = ODEProblem(QSIR, u0, tspan, p3)
-    t = range(tspan[1], tspan[2], length = dsize_train + dsize_test)
-    t_train = range(tspan_train[1], tspan_train[2], length = dsize_train)
-    t_test = range(tspan_test[1], tspan_test[2], length = dsize_test)
     
     if test_model
-        sol = Array(concrete_solve(prob, Rosenbrock23(autodiff = false), u0, p3, saveat=t))
+        sol = Array(concrete_solve(prob, Rosenbrock23(autodiff = false), u0, p3, saveat=t_train))
     end
     
-    return ps, re, u0, prob, t, t_train, t_test, p3, length(p1)
+    return ps, re, u0, prob, p3, length(p1)
 end

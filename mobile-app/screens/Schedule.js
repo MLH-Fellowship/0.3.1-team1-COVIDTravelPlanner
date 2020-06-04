@@ -16,29 +16,12 @@ import { Card } from "../components/";
 import CustomCard from "../components/CustomCard";
 import MapHeader from "../assets/imgs/map-header.png";
 import MapImg from "../assets/imgs/map.png"
+import { SEVERITY, COLOR_CODES } from "../constants/data";
 
 const { width, height } = Dimensions.get("screen");
 
 const thumbMeasure = (width - 48 - 32) / 3;
 const cardWidth = width - theme.SIZES.BASE * 2;
-const categories = [
-    {
-        title: "Music Album",
-        description:
-            "Rock music is a genre of popular music. It developed during and after the 1960s in the United Kingdom.",
-        image:
-            "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?fit=crop&w=840&q=80",
-        price: "$125",
-    },
-    {
-        title: "Events",
-        description:
-            "Rock music is a genre of popular music. It developed during and after the 1960s in the United Kingdom.",
-        image:
-            "https://images.unsplash.com/photo-1543747579-795b9c2c3ada?fit=crop&w=840&q=80",
-        price: "$35",
-    },
-];
 
 const dummyData = [
     {
@@ -97,7 +80,77 @@ const dummyData = [
     },
 ];
 
-class Articles extends React.Component {
+function splitDate(date) {
+    const timestr = date.toTimeString().split(" ")[0];
+    const out = timestr.split(":")[0] + ":" + timestr.split(":")[1];
+    return out;
+}
+
+function compare(a, b) {
+    return parseInt(a.starttime) - parseInt(b.starttime);
+}
+
+const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+class Schedule extends React.Component {
+
+    parse = (events) => {
+        const today = new Date();
+        const initial = new Array()
+        for (let i = 0; i < 7; i++) {
+            initial.push(new Array());
+        }
+
+        events.sort(compare);
+        for (let event of events) {
+            const startDate = new Date(event.starttime);
+            const endDate = new Date(event.endtime);
+            
+            if (
+                startDate.getDate() !== endDate.getDate() ||
+                startDate.getMonth() !== endDate.getMonth() ||
+                startDate.getFullYear() !== endDate.getFullYear()
+            ) {
+                continue;
+            }
+            const nextWeek = new Date();
+            nextWeek.setDate(today.getDate() + 6);
+            if (startDate < today || startDate > nextWeek) {
+                continue;
+            }
+
+            const temp = {}
+            temp.time = splitDate(startDate) + " - " + splitDate(endDate);
+            temp.place = event.place.split("_")[1] + ", " + event.place.split("_")[0];
+            temp.severity = event.prediction;
+
+            if (event.prediction < SEVERITY.MEDIUM) {
+                temp.color = COLOR_CODES.LOW;
+            } else if (event.prediction < SEVERITY.HIGH) {
+                temp.color = COLOR_CODES.MEDIUM;
+            } else {
+                temp.color = COLOR_CODES.HIGH;
+            }
+            const idx = startDate.getDate() - today.getDate();
+            initial[idx].push(temp);
+        }
+
+        const finalData = [];
+        for (let i = 0; i < 7; i++) {
+            const temp = {};
+            const d = new Date();
+            d.setDate(today.getDate() + i);
+
+            temp.day = DAYS[d.getDay()];
+            temp.date = MONTHS[d.getMonth()] + " " + d.getDate();
+            temp.events = initial[i];
+            finalData.push(temp);
+        }
+        return finalData;
+
+    }
+
     renderProduct = (item, index) => {
         const { navigation } = this.props;
 
@@ -166,7 +219,7 @@ class Articles extends React.Component {
                             contentContainerStyle={{
                                 paddingHorizontal: theme.SIZES.BASE / 2,
                             }}>
-                            {categories &&
+                            {
                                 dummyData.map((item, index) =>
                                     this.renderProduct(item, index)
                                 )}
@@ -180,9 +233,7 @@ class Articles extends React.Component {
     render() {
         return (
             <Block flex center>
-                {/* <ScrollView showsVerticalScrollIndicator={false}> */}
                     {this.renderCards()}
-                {/* </ScrollView> */}
             </Block>
         );
     }
@@ -213,4 +264,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Articles;
+export default Schedule;

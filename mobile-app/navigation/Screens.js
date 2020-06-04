@@ -19,6 +19,7 @@ import Articles from "../screens/Articles";
 import LoginRegister from "../screens/LoginRegister";
 import Dashboard from "../screens/Dashboard";
 import Schedule from "../screens/Schedule";
+import AddEvent from "../screens/Add";
 // drawer
 import CustomDrawerContent from "./Menu";
 
@@ -37,11 +38,11 @@ function ElementsStack(props) {
         <Stack.Navigator mode="card" headerMode="screen">
             <Stack.Screen
                 name="Elements"
-                component={Elements}
+                component={AddEvent}
                 options={{
                     header: ({ navigation, scene }) => (
                         <Header
-                            title="Elements"
+                            title="Add Event"
                             navigation={navigation}
                             scene={scene}
                         />

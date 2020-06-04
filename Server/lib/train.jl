@@ -118,7 +118,7 @@ function train_all_districts(file; each_epochs = 200, retrain = false)
     train_named_locations(data_all, [], collect(keys(data_all)); each_epochs = each_epochs, retrain = retrain)
 end
 
-prediction(state::String, district::String, day_num::Int) =
+prediction(state::String, district::String, day_num::Int64) =
     prediction(state, district, [day_num])
 
 function prediction(state::String, district::String, day_num::Vector{Int})

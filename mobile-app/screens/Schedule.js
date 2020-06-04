@@ -1,4 +1,7 @@
 import React from "react";
+import axios from "axios";
+import { HOST_URI } from "../constants/data";
+import { storeData, getData } from "../navigation/storage";
 import {
     ScrollView,
     StyleSheet,
@@ -94,6 +97,14 @@ const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 class Schedule extends React.Component {
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            schedule: [],
+        }
+    }
 
     parse = (events) => {
         const today = new Date();

@@ -1,4 +1,8 @@
 import React from "react";
+import axios from "axios";
+import { HOST_URI } from "../constants/data";
+import { storeData, getData } from "../navigation/storage";
+
 import {
     StyleSheet,
     ImageBackground,
@@ -14,6 +18,94 @@ import { Images, argonTheme } from "../constants";
 const { width, height } = Dimensions.get("screen");
 
 class LoginRegister extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            loginEmail: "",
+            loginPassword: "",
+            registerName: "",
+            registerEmail: "",
+            registerPassword: "",
+        };
+    }
+
+    handleRegister = () => {
+        if (this.state.registerEmail === "" || this.state.registerName === "" || this.state.registerPassword === "") {
+            return;
+        }
+
+
+        const data = {
+            name: this.state.registerName,
+            email: this.state.registerEmail,
+            password: this.state.registerPassword,
+        };
+        const url = HOST_URI + "/api/v1/register/"
+
+        console.log(url);
+
+        axios({
+            url: url,
+            method: "POST",
+            data: data,
+            headers: {
+                "Content-Type": "application/json",
+            }
+        }).then((response) => {
+            this.setState({
+                loginEmail: this.state.registerEmail,
+                loginPassword: this.state.registerPassword,
+            }, this.handleLogin);
+        }).catch((error) => {
+            console.log(error);
+            if (error) {
+                this.setState({
+                    registerName: "",
+                    registerEmail: "",
+                    registerPassword: "",
+                });
+                if (error.response) {
+                    console.log(error.response.data);
+                }
+            }
+        });
+    }
+
+    handleLogin = () => {
+        if (this.state.loginEmail === "" || this.state.loginPassword === "") {
+            return;
+        }
+
+        const data = {
+            email: this.state.loginEmail,
+            password: this.state.loginPassword
+        };
+        const url = HOST_URI + "/api/v1/login/";
+
+        axios({
+            url: url,
+            method: "POST",
+            data: data,
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then((response) => {
+            return storeData("token", response.data.token + '');
+        }).then(() => {
+            // navigate
+        }).catch((error) => {
+            if (error) {
+                this.setState({
+                    loginEmail: "",
+                    loginPassword: "",
+                });
+                if (error.response) {
+                    console.log(error.response.data);
+                }
+            }
+        });
+    }
+
     render() {
         return (
             <Block flex middle>
@@ -44,6 +136,11 @@ class LoginRegister extends React.Component {
                                             <Input
                                                 borderless
                                                 placeholder="Email"
+                                                onChangeText={(email) => {
+                                                    this.setState({
+                                                        loginEmail: email,
+                                                    });
+                                                }}
                                                 iconContent={
                                                     <Icon
                                                         size={16}
@@ -65,6 +162,11 @@ class LoginRegister extends React.Component {
                                                 password
                                                 borderless
                                                 placeholder="Password"
+                                                onChangeText={(pswrd) => {
+                                                    this.setState({
+                                                        loginPassword: pswrd,
+                                                    });
+                                                }}
                                                 iconContent={
                                                     <Icon
                                                         size={16}
@@ -84,7 +186,8 @@ class LoginRegister extends React.Component {
                                         <Block middle>
                                             <Button
                                                 color="primary"
-                                                style={styles.createButton}>
+                                                style={styles.createButton}
+                                                onPress={this.handleLogin}>
                                                 <Text
                                                     bold
                                                     size={14}
@@ -116,6 +219,11 @@ class LoginRegister extends React.Component {
                                             <Input
                                                 borderless
                                                 placeholder="Name"
+                                                onChangeText={(name) => {
+                                                    this.setState({
+                                                        registerName: name,
+                                                    });
+                                                }}
                                                 iconContent={
                                                     <Icon
                                                         size={16}
@@ -138,6 +246,11 @@ class LoginRegister extends React.Component {
                                             <Input
                                                 borderless
                                                 placeholder="Email"
+                                                onChangeText={(email) => {
+                                                    this.setState({
+                                                        registerEmail: email,
+                                                    });
+                                                }}
                                                 iconContent={
                                                     <Icon
                                                         size={16}
@@ -159,6 +272,11 @@ class LoginRegister extends React.Component {
                                                 password
                                                 borderless
                                                 placeholder="Password"
+                                                onChangeText={(pswrd) => {
+                                                    this.setState({
+                                                        registerPassword: pswrd,
+                                                    });
+                                                }}
                                                 iconContent={
                                                     <Icon
                                                         size={16}
@@ -178,7 +296,8 @@ class LoginRegister extends React.Component {
                                         <Block middle>
                                             <Button
                                                 color="primary"
-                                                style={styles.createButton}>
+                                                style={styles.createButton}
+                                                onPress={this.handleRegister}>
                                                 <Text
                                                     bold
                                                     size={14}

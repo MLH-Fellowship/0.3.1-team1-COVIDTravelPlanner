@@ -1,4 +1,7 @@
 import React from "react";
+import axios from "axios";
+import { HOST_URI } from "../constants/data";
+import { storeData, getData } from "../navigation/storage";
 import {
     ScrollView,
     StyleSheet,
@@ -128,6 +131,27 @@ export default class AddEvent extends React.Component {
             state: this.state.localeState,
             // token left
         }
+        getData("token").then((token) => {
+            data.token = parseFloat(token);
+            console.log(data);
+            const url = HOST_URI + "/api/v1/schedule/add/";
+            return axios({
+                url: url,
+                method: "POST",
+                data: data,
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+        }).then((response) => {
+            console.log("done");
+            // navigate
+        }).catch((error) => {
+            console.log(error);
+            if (error.response) {
+                console.log(error.response.data);
+            }
+        });
     }
 
     render() {

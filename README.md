@@ -1,6 +1,12 @@
 # COVID19 Travel (Un)planner
 _Hackathon project submission repository for Pod 0.3.1 (Lazy Lobsters) Team 1_
 
+<p align="center">
+<img src="https://user-images.githubusercontent.com/33966400/83805035-c365f680-a6cc-11ea-9fcf-82c46f82fad0.png" width=256>
+<br />
+<h3 align="center">COVID19 Travel (Un)planner</h3>
+</p>
+
 ## Project Description
 This project aims to use SciML to fit a differential equation to the COVID-19 Number-Of-Cases time series data. This would allow us to predict the number of cases in the future, to some degree of accuracy. This would be done separately per district or state, as per the availability of reliable data. The results would be displayed on an interactive graphical webpage.
 

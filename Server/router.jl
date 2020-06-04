@@ -89,7 +89,7 @@ function get_status(req::HTTP.Request)
   else
     infected, rd = pred
   end
-  out = Dict("infected" => infected, "rd" => rd)
+  out = Dict("infected" => infected .+ rd, "rd" => rd)
   return HTTP.Response(200, [Pair("Access-Control-Allow-Origin", "*")]; body=JSON2.write(out))
 end
 

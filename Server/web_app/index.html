@@ -9,7 +9,7 @@
         <!-- Local scripts -->
         <link rel="stylesheet" href="css/main.css">
         <!-- Bootstrap -->
-        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/bootstrap.css" rel="stylesheet">
         <script src="js/jquery.min.js"></script>
         <script src="js/popper.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
@@ -19,13 +19,45 @@
         <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js" type="text/javascript" charset="utf-8"></script>
         <script src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js" type="text/javascript" charset="utf-8"></script>
         <script src="https://js.api.here.com/v3/3.1/mapsjs-ui.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- moment js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.26.0/moment.min.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- chart js -->
+        <script src="js/Chart.min.js" charset="utf-8" type="text/javascript"></script>
         <!-- <script src="https://unpkg.com/tangram@0.15.1/dist/tangram.min.js"></script> -->
         <link rel="stylesheet" type="text/css" href="https://js.api.here.com/v3/3.1/mapsjs-ui.css" />
     </head>
     <body>
         <nav class="sidebar">
             <div class="sidebar-header container-fluid">
+                <h1 class="font-weight-bold">Covid19 Travel Planer</h1>
+            </div>
+            <hr>
+            <div class="container">
                 <input id="loc-searchbar" class="form-control" type="text" placeholder="Search" aria-label="Search">
+            </div>
+            <hr>
+            <div class="font-weight-bold container">
+                <p id="sidebar-date"></p>
+            </div>
+            <div class="text-uppercase container">
+                <div class="float-left mr-5">
+                    <h6 class="text-white bg-warning p-1 small">Confirmed</h6>
+                    <h2 class="font-weight-bold">6,131,320</h2>
+                </div>
+                <div class="float-left">
+                    <h6 class="text-white bg-dark p-1 small">Recovered + Deaths</h6>
+                    <h2 class="font-weight-bold">6,131,320</h2>
+                </div>
+            </div>
+            </br>
+            </br>
+            </br>
+            <hr>
+            <!--S prediction graph for current district -->
+            <div class="container-fluid">
+                <canvas id="prediction-graph" height="300"></canvas>
             </div>
         </nav>
         <div class="main">
@@ -37,6 +69,7 @@
                 latitude = data.geoplugin_latitude;
                 longitude = data.geoplugin_longitude;
                 map.setCenter({lat:latitude, lng:longitude});
+                map.addObject(new H.map.Marker({lat:latitude, lng:longitude}));
             });
             var platform = new H.service.Platform({
                 'apikey': 'aP97iFmEaGPuQz1aW6x1XRYbXGQIEwnzY0U9nSn_X_c'
@@ -63,6 +96,50 @@
             }
             var mapUI = H.ui.UI.createDefault(map, defaultLayers);
             var searchService = platform.getSearchService();
+
+            // Set up the prediction graph for the first time
+            var ctx = document.getElementById('prediction-graph').getContext('2d');
+            var x = [];
+            for (var i = 0; i < 7; i++) {
+                x[i] = moment().add(i, 'day').format('DD MMM');
+            }
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: x,
+                    datasets: [{
+                        label: 'predicted cases',
+                        data: [12, 19, 3, 2, 8, 3, 10],
+                        backgroundColor: [
+                            'rgba(153, 102, 255, 0.0)',
+                        ],
+                        borderColor: [
+                            'rgba(255, 206, 86, 1)',
+                        ],
+                        borderWidth: 4
+                    },
+                    {
+                        label: 'recovered + deaths',
+                        data: [1, 10, 3, 5, 2, 3, 10],
+                        backgroundColor: [
+                            'rgba(153, 102, 255, 0.0)',
+                        ],
+                        borderColor: [
+                            'rgba(0, 0, 0, 1)',
+                        ],
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
         </script>
         <!-- <button type="button" name="button" onclick="f()"></button> -->
         <script src="js/maputils.js" type="text/javascript"></script>

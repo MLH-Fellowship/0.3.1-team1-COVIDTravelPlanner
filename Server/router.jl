@@ -32,9 +32,13 @@ function login(req::HTTP.Request)
   else
     token = rand(UInt32)
     USERS[r[1]].token = token
-    @show USERS[r[1]]
     return HTTP.Response(200, "{ \"token\": $(token) }")
   end
+end
+
+function get_day_offset(epoch)
+  d = unix2datetime(epoch)
+  return day(d) - 4 # 4 means 4 june
 end
 
 function add_schedule(req::HTTP.Request)
@@ -45,8 +49,8 @@ function add_schedule(req::HTTP.Request)
     return HTTP.Response(400, "{ \"message\": \"user not found\" }")
   else
     user  = USERS[r[1]]
-    pred = prediction(state, district, collect(starttime:endtime))
-    sched = Schedule(getNextScheduleId(), user.id, starttime, endtime, state + "_" + district, pred, Int(round(time())))
+    pred, _ = prediction(state, district, get_day_offset(starttime))
+    sched = Schedule(getNextScheduleId(), user.id, starttime, endtime, state * "_" * district, pred[1], Int(round(time())))
     SCHEDULES[sched.id] = sched
     return HTTP.Response(200, JSON2.write(sched))
   end

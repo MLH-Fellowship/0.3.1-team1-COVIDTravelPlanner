@@ -44,7 +44,7 @@ function add_schedule(req::HTTP.Request)
   if isempty(r)
     return HTTP.Response(400, "{ \"message\": \"user not found\" }")
   else
-    user  = r[1]
+    user  = USERS[r[1]]
     pred = prediction(place, starttime, endtime)
     sched = Schedule(getNextScheduleId(), user.id, starttime, endtime, place, pred, Int(round(time())))
     SCHEDULES[sched.id] = sched
@@ -59,9 +59,13 @@ function get_shedules(req::HTTP.Request)
   if isempty(r)
     return HTTP.Response(400, "{ \"message\": \"user not found\" }")
   else
-    user  = r[1]
+    user  = USERS[r[1]]
     idxs = findall(x -> (x.uid == user.id), SCHEDULES)
-    return HTTP.Response(200, JSON2.write(SCHEDULES[idxs]))
+    out = Array{Schedule}(undef, 0)
+    for i in idxs
+      push!(out, SCHEDULES[i])
+    end
+    return HTTP.Response(200, JSON2.write(out))
   end
 end
 

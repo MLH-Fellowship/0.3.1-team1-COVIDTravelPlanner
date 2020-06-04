@@ -25,7 +25,7 @@ mutable struct Schedule
     timestamp::Int64
 end
 
-const SCHEDULES = Dict{Int, User}()
+const SCHEDULES = Dict{Int, Schedule}()
 const NEXT_SCHEDULE_ID = Ref(0)
 
 function getNextScheduleId()

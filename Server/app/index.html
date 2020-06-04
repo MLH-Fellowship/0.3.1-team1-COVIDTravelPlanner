@@ -62,7 +62,7 @@
             <!--S prediction graph for current district -->
             <div class="container">
                 <canvas id="prediction-graph" height="300"></canvas>
-                <input type="range" class="m-3 range-slider" min="0" max="6" step="1">
+                <!-- <input type="range" class="m-3 range-slider" min="0" max="6" step="1" value="0" onchange="showSelectedDate(this)"> -->
             </div>
 
         </nav>
@@ -91,12 +91,11 @@
             var behavior = new H.mapevents.Behavior(mapEvents);
             var mapUI = H.ui.UI.createDefault(map, defaultLayers);
             var searchService = platform.getSearchService();
-            // $.get('https://api.ipregistry.co/?key=cxq73pefu35qew', function(data){
-            //     var query = data.location.city + ', ' + data.location.region.name;
-            //     predict(map, searchService, query);
-            // });
+            $.get('https://api.ipregistry.co/?key=cxq73pefu35qew', function(data){
+                var query = data.location.city + ', ' + data.location.region.name;
+                predict(map, searchService, query);
+            });
         </script>
-        <!-- <button type="button" name="button" onclick="f()"></button> -->
         <script src="js/main.js" type="text/javascript"></script>
     </body>
 </html>

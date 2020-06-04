@@ -1,9 +1,10 @@
 update_loss_log(run_logs, loss) = append!(run_logs["loss"], loss)
 Zygote.@nograd update_loss_log
 
-function train(prob, t, u0, p3, data, epochs, opt, avg_meter, plen; cont_train = false)
+function train(prob, t, u0, p3, ps, data, epochs, opt, avg_meter,
+               plen; cont_train = false)
     log_infected = log.(abs.(data["infected"]))
-    log_recovered = log.(abs.(data["recovered"] .+ data["dead"]))    
+    log_recovered = log.(abs.(data["recovered"] .+ data["deceased"]))    
     
     run_logs = Dict(
         "loss" => [],
@@ -25,7 +26,7 @@ function train(prob, t, u0, p3, data, epochs, opt, avg_meter, plen; cont_train =
     function loss_adjoint()
         prediction = predict_adjoint()
         infect_loss = sum(abs2, log_infected .- log.(abs.(prediction[2, :])))
-        recover_loss = sum(abs2, log_recovered .- log.(abs.(prediction[3, :])))
+        recover_loss = 0.0 # sum(abs2, log_recovered .- log.(abs.(prediction[3, :])))
         loss = infect_loss + recover_loss
 
         update(avg_meter, loss)
@@ -46,10 +47,10 @@ function train(prob, t, u0, p3, data, epochs, opt, avg_meter, plen; cont_train =
     
     Flux.train!(loss_adjoint, ps, dat, opt, cb = cb)
     
-    min_loss, idx = findmin(run_logs["loss"])
-    idx1 = (idx - 1) * (plen + 2) + 1
-    idx2 = idx * (plen + 2)
-    p3 = run_logs["p3"][idx1:idx2]
+    # min_loss, idx = findmin(run_logs["loss"])
+    # idx1 = (idx - 1) * (plen + 2) + 1
+    # idx2 = idx * (plen + 2)
+    # p3 = run_logs["p3"][idx1:idx2]
     
     return u0, p3
 end
@@ -65,7 +66,7 @@ function inference(prob, u0, p, t)
     return S_NN, I_NN, R_NN, T_NN
 end
 
-function train_all_districts(file; each_epochs = 200)
+function train_all_districts(file; each_epochs = 200, retrain = false)
     data_all = clean_data(file)
     avg_meter = RunningAverageMeter()
     for state in keys(data_all)
@@ -77,15 +78,19 @@ function train_all_districts(file; each_epochs = 200)
                 continue
             end
             filepath = joinpath(@__DIR__, "../data/" * state * "_" * district * ".bson")
+            if isfile(filepath) && !retrain
+                @info "Model already trained for District $district"
+                continue
+            end
             @info "District $district"
             t_train = df["time_train"]
             t_test = df["time_test"]
             ps, re, u0, prob, p3, plen =
                 construct_model(t_train, t_test, hidden_dim = 30, test_model = false)
-            opt = ADAM(1e-2)
-            u0, p = train(prob, t_train, u0, p3, dat, each_epochs, opt, avg_meter, plen,
+            opt = ADAM(1e-3)
+            u0, p = train(prob, t_train, u0, p3, ps, df, each_epochs, opt, avg_meter, plen,
                           cont_train = false)
-            BSON.@save filepath prob u0 p t_train t_test
+            BSON.@save filepath u0 p t_train t_test
             @info "Saved model to $filepath"
         end
     end
@@ -95,4 +100,13 @@ prediction(state::String, district::String, day_num::Int) =
     prediction(state, district, [day_num])
 
 function prediction(state::String, district::String, day_num::Vector{Int})
+    filepath = joinpath(@__DIR__, "../data/" * format_string(state) * "_" * format_string(district) * ".bson")
+    if !isfile(filepath)
+        return nothing
+    end
+    BSON.@load filepath u0 p t_train t_test
+    _, _, _, prob, _, _ =
+        construct_model(t_train, t_test, hidden_dim = 30, test_model = false)
+    s_nn, i_nn, r_nn, t_nn = inference(prob, u0, p, t_test)
+    return i_nn[day_num], r_nn[day_num]
 end

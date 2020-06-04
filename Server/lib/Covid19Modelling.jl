@@ -9,6 +9,7 @@ using LaTeXStrings
 using Zygote
 using BSON
 using LinearAlgebra
+using NNlib
 
 include("utils.jl")
 include("data.jl")

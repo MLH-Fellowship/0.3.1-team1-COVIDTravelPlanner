@@ -67,27 +67,27 @@
             <div id="mapContainer" class="main"></div>
         </div>
         <script>
-            // var platform = new H.service.Platform({
-            //     'apikey': 'aP97iFmEaGPuQz1aW6x1XRYbXGQIEwnzY0U9nSn_X_c'
-            // });
-            // var defaultLayers = platform.createDefaultLayers();
-            // var map = new H.Map(
-            //     document.getElementById('mapContainer'),
-            //     defaultLayers.vector.normal.map,
-            //     {
-            //         zoom: 10,
-            //         center: { lat: 0, lng: 0 }
-            //     }
-            // );
-            //
-            // var mapEvents = new H.mapevents.MapEvents(map);
-            // map.addEventListener('tap', function(evt) {
-            //     // Log 'tap' and 'mouse' events:
-            //     console.log(evt.type, evt.currentPointer.type);
-            // });
-            // var behavior = new H.mapevents.Behavior(mapEvents);
-            // var mapUI = H.ui.UI.createDefault(map, defaultLayers);
-            // var searchService = platform.getSearchService();
+            var platform = new H.service.Platform({
+                'apikey': 'aP97iFmEaGPuQz1aW6x1XRYbXGQIEwnzY0U9nSn_X_c'
+            });
+            var defaultLayers = platform.createDefaultLayers();
+            var map = new H.Map(
+                document.getElementById('mapContainer'),
+                defaultLayers.vector.normal.map,
+                {
+                    zoom: 10,
+                    center: { lat: 0, lng: 0 }
+                }
+            );
+
+            var mapEvents = new H.mapevents.MapEvents(map);
+            map.addEventListener('tap', function(evt) {
+                // Log 'tap' and 'mouse' events:
+                console.log(evt.type, evt.currentPointer.type);
+            });
+            var behavior = new H.mapevents.Behavior(mapEvents);
+            var mapUI = H.ui.UI.createDefault(map, defaultLayers);
+            var searchService = platform.getSearchService();
             // $.get('https://api.ipregistry.co/?key=cxq73pefu35qew', function(data){
             //     var query = data.location.city + ', ' + data.location.region.name;
             //     predict(map, searchService, query);

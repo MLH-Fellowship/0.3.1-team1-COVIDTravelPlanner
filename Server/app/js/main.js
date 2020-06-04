@@ -14,12 +14,12 @@ function predict(map, searchService, query){
             map.setCenter(item.position);
 
             $.ajax({
-                type: 'GET',
-                url:'http://127.0.0.1:8081/api/v1/status/',
-                data: {
-                    state: item.address.state,
-                    district: item.address.city
-                },
+                type: 'POST',
+                url:'/api/v1/status',
+                data: JSON.stringify({
+                            state: item.address.state,
+                            district: item.address.city
+                        }),
                 headers: {
                     'mozSystem': true,
                     'Access-Control-Allow-Origin': '*',
@@ -36,11 +36,11 @@ function predict(map, searchService, query){
 }
 
 function updateData(data){
-    predictionGraph.data.datasets[0].data = data.infected;
-    predictionGraph.data.datasets[1].data = data.rd;
+    predictionGraph.data.datasets[0].data =  data.infected.map(x => Math.round(x));
+    predictionGraph.data.datasets[1].data = data.rd.map(x => Math.round(x));
     predictionGraph.update();
-    confirmedCases.innerHTML = data.infected[0];
-    recDeaths.innerHTML = data.rd[0];
+    confirmedCases.innerHTML = Math.round(data.infected[0]);
+    recDeaths.innerHTML = Math.round(data.rd[0]);
 }
 
 var searchBar = document.getElementById('loc-searchbar');

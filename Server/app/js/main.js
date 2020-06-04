@@ -43,8 +43,10 @@ function updateData(data){
     recDeaths.innerHTML = Math.round(data.rd[0]);
 }
 
+// TODO: bind this to graph
 function showSelectedDate(slider){
-    console.log("hello");
+    console.log(predictionGraph.options.dataIndex);
+    // console.log(predictionGraph.getDatasetMeta(0).controller);
     sidebarDate.innerHTML = moment().add(slider.value, 'day').format('DD MMMM YY');
     confirmedCases.innerHTML = predictionGraph.data.datasets[0].data[slider.value];
     recDeaths.innerHTML = predictionGraph.data.datasets[1].data[slider.value];
@@ -81,7 +83,9 @@ var predictionGraph = new Chart(ctx, {
             borderColor: [
                 'rgba(255, 206, 86, 1)',
             ],
-            borderWidth: 4
+            borderWidth: 4,
+            pointHoverRadius:10,
+            pointBackgroundColor:'rgba(0, 0, 0, 1)',
         },
         {
             label: 'recovered + deaths',
@@ -91,7 +95,9 @@ var predictionGraph = new Chart(ctx, {
             borderColor: [
                 'rgba(0, 0, 0, 1)',
             ],
-            borderWidth: 4
+            borderWidth: 4,
+            pointHoverRadius:10,
+            pointBackgroundColor:'rgba(255, 206, 86, 1)',
         }]
     },
     options: {
@@ -101,6 +107,15 @@ var predictionGraph = new Chart(ctx, {
                     beginAtZero: true
                 }
             }]
-        }
+        },
     }
 });
+
+document.getElementById('prediction-graph').onclick = function (evt) {
+    var activePoint = predictionGraph.getElementAtEvent(evt);
+    sidebarDate.innerHTML = moment()
+                            .add(activePoint[0]._index, 'day')
+                            .format('DD MMMM YY');
+    confirmedCases.innerHTML = predictionGraph.data.datasets[0].data[activePoint[0]._index];
+    recDeaths.innerHTML = predictionGraph.data.datasets[1].data[activePoint[0]._index];
+}

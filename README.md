@@ -33,7 +33,13 @@ Data sourced from https://api.covid19india.org/.
 - React Native : For the Application
 - DiffEqFlux : For training district wise models
 
+### Mobile Application
+- React Native
+- Expo
+
 ## Local Setup
+
+### Server
 
 1. Clone repository
 ```
@@ -50,7 +56,24 @@ Data sourced from https://api.covid19india.org/.
 	julia --project=./Server Server/server.jl
 ```
 
-4. _TODO: application instructions_
+### Mobile App using Expo
+
+1. Change into the `mobile-app` repository
+```
+cd mobile-app
+```
+
+2. Install dependencies
+```
+npm install
+```
+
+3. Run the Expo development server
+```
+npm start
+```
+
+4. Follow the instructions on screen
 
 
 ## Predictive Models for Covid19
@@ -113,4 +136,3 @@ counts we use minimize the weighted squared difference between the log of the ca
 [1] Rackauckas, Christopher, et al. "Universal Differential Equations for Scientific Machine Learning." arXiv preprint arXiv:2001.04385 (2020).
 
 [2] Dandekar, Raj, and George Barbastathis. "Quantifying the effect of quarantine control in Covid-19 infectious spread using machine learning." medRxiv (2020).
-

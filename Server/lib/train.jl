@@ -118,10 +118,10 @@ function train_all_districts(file; each_epochs = 200, retrain = false)
     train_named_locations(data_all, [], collect(keys(data_all)); each_epochs = each_epochs, retrain = retrain)
 end
 
-prediction(state::String, district::String, day_num::Int) =
+prediction(state::String, district::String, day_num::Int64) =
     prediction(state, district, [day_num])
 
-function prediction(state::String, district::String, day_num::Vector{Int})
+function prediction(state::String, district::String, day_num::Vector{Int64})
     filepath = joinpath(@__DIR__, "../data/" * format_string(state) * "_" * format_string(district) * ".bson")
     if !isfile(filepath)
         return nothing

@@ -25,3 +25,9 @@ Manifest.toml
 
 # Jupyter Notebooks
 .ipynb_notebooks/*
+# Javascript files
+**/node_modules/**
+**/.expo/**
+
+# Editor files
+**/.vscode/**

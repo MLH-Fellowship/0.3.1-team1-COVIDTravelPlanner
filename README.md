@@ -52,3 +52,62 @@ Data sourced from https://api.covid19india.org/.
 
 4. _TODO: application instructions_
 
+
+## Predictive Models for Covid19
+
+We provide the code for training the neural network models and running inference using them in the `Covid19Modelling` module inside `Server/lib`. First we need to install the
+dependencies using 
+```
+	julia --project=./Server -e "using Pkg; Pkg.instantiate()"
+```
+
+### Training the models
+
+Our models need to be retrained daily / whenever a new data point is available. To train the model on a single
+district run the following code:
+
+```julia
+include("Server/lib/Covid19Modelling.jl") # Import the module
+
+# The dataset needs to be updated on a daily basis
+Covid19Modelling.train_named_locations("Dataset/final.csv", [<Names of Districts>], [<Names of States>], retrain = true, each_epochs = 100)
+```
+
+If all the models need to be retrained, simply change the last line above to the following
+
+```julia
+Covid19Modelling.train_alll_districts("Dataset/final.csv", retrain = true, each_epochs = 100)
+```
+
+### Getting the model predictions
+
+Once the models are trained to obtain the predictions for the next 7 days, we do the following:
+
+```julia
+# Gives the predictions for the next 7 days
+Covid19Modelling.prediction(<Name of state>, <Name of District>, [1, 2, 3, 4, 5, 6, 7])
+
+# Gives the predictions for the 2nd, 4th and 6th day from today
+Covid19Modelling.prediction(<Name of state>, <Name of District>, [2, 4, 6])
+
+# Gives the predictions for day after tomorrow
+Covid19Modelling.prediction(<Name of state>, <Name of District>, 2)
+```
+Basically, you can get the predictions for any day in the next week. The function returns the total active cases and the total resolved cases (recovered + deceased)
+
+
+### Model Description
+
+We model our Differential Equations as follows using the DifferentialEquations.jl packages
+![webapp](Screenshots/sir.png)
+
+We draw inspiration from the previous works [1] and [2]. We use a multilayer perceptron to parameterize the differential equations
+and using backpropogation through the solver we are able to learn the parameters in an end-to-end manner. To learn to predict the case
+counts we use minimize the weighted squared difference between the log of the case numbers.
+
+## References
+
+[1] Rackauckas, Christopher, et al. "Universal Differential Equations for Scientific Machine Learning." arXiv preprint arXiv:2001.04385 (2020).
+
+[2] Dandekar, Raj, and George Barbastathis. "Quantifying the effect of quarantine control in Covid-19 infectious spread using machine learning." medRxiv (2020).
+

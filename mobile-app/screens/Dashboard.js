@@ -9,6 +9,7 @@ import {
     Image,
     ImageBackground,
     Platform,
+    TouchableWithoutFeedback
 } from "react-native";
 import { Block, Text, theme } from "galio-framework";
 
@@ -41,6 +42,11 @@ class Profile extends React.Component {
     }
 
     componentDidMount() {
+        this.load();
+        // this.props.navigation.addListener("willFocus", this.load);
+    }
+
+    load = () => {
         getData("token")
             .then((token) => {
                 const data = {
@@ -101,6 +107,7 @@ class Profile extends React.Component {
                     }
                 }
             });
+
     }
 
     parse = (events) => {
@@ -154,10 +161,12 @@ class Profile extends React.Component {
                             style={{ width, paddingTop: 20 }}>
                             <Block flex style={styles.profileCard}>
                                 <Block middle style={styles.avatarContainer}>
-                                    <Image
-                                        source={{ uri: Images.ProfilePicture }}
-                                        style={styles.avatar}
-                                    />
+                                    <TouchableWithoutFeedback onPress={this.load}>
+                                        <Image
+                                            source={{ uri: Images.ProfilePicture }}
+                                            style={styles.avatar}
+                                        />
+                                    </TouchableWithoutFeedback>
                                 </Block>
 
                                 <Block flex>

@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios";
 import { HOST_URI } from "../constants/data";
 import { storeData, getData } from "../navigation/storage";
+import { withNavigation } from "react-navigation";
 import {
     ScrollView,
     StyleSheet,
@@ -107,32 +108,45 @@ class Schedule extends React.Component {
     }
 
     componentDidMount() {
-        getData("token").then((token) => {
-            const data = {
-                token: parseFloat(token),
-            };
-            const url = HOST_URI + "/api/v1/schedule/list/"
-            return axios({
-                url: url,
-                method: "POST",
-                data: data,
-                headers: {
-                    "Content-Type": "application/json",
+        this.load();
+        // this.focusListener = this.props.navigation.addListener("willFocus", this.load());
+    }
+
+    // componentWillUnmount() {
+    //     this.focusListener.remove();
+    // }
+
+    load = () => {
+        console.log("bh");
+        getData("token")
+            .then((token) => {
+                const data = {
+                    token: parseFloat(token),
+                };
+                const url = HOST_URI + "/api/v1/schedule/list/";
+                return axios({
+                    url: url,
+                    method: "POST",
+                    data: data,
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+            })
+            .then((response) => {
+                this.setState({
+                    schedule: this.parse(response.data),
+                });
+            })
+            .catch((error) => {
+                console.log(error);
+                if (error) {
+                    console.log(error.response);
+                    if (error.response) {
+                        console.log(error.response.data);
+                    }
                 }
             });
-        }).then((response) => {
-            this.setState({
-                schedule: this.parse(response.data)
-            })
-        }).catch((error) => {
-            console.log(error);
-            if (error) {
-                console.log(error.response);
-                if (error.response) {
-                    console.log(error.response.data);
-                }
-            }
-        });
     }
 
     parse = (events) => {
@@ -196,16 +210,18 @@ class Schedule extends React.Component {
         const { navigation } = this.props;
 
         return (
-            <TouchableWithoutFeedback
-                style={{ zIndex: 3 }}
-                key={`product-${item.day}`}
-                onPress={() => {}}>
+            // <TouchableWithoutFeedback
+            //     style={{ zIndex: 3 }}
+            //     key={`product-${item.day}`}
+            //     onPress={() => {}}>
                 <Block center style={styles.productItem}>
-                    <Image
-                        resizeMode="contain"
-                        style={styles.productImage}
-                        source={MapHeader}
-                    />
+                    <TouchableWithoutFeedback onPress={this.load}>
+                        <Image
+                            resizeMode="contain"
+                            style={styles.productImage}
+                            source={MapHeader}
+                        />
+                    </TouchableWithoutFeedback>
                     <Block
                         center
                         style={{ paddingHorizontal: theme.SIZES.BASE }}>
@@ -238,7 +254,7 @@ class Schedule extends React.Component {
                         </Block>
                     </Block>
                 </Block>
-            </TouchableWithoutFeedback>
+            // </TouchableWithoutFeedback>
         );
     };
 
@@ -305,4 +321,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Schedule;
+export default withNavigation(Schedule);

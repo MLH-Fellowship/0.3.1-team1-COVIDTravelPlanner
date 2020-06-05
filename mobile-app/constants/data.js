@@ -16,4 +16,5 @@ module.exports = {
         HIGH: "#E54B25",
     },
     HOST_URI: `http://${manifest.debuggerHost.split(":").shift()}:8081`,
+    // HOST_URI: "http://192.168.42.102:8081"
 }

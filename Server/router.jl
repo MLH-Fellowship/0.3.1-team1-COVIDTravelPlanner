@@ -20,8 +20,8 @@ function getUser(req::HTTP.Request)
     if isempty(r)
       return HTTP.Response(400, "{ \"message\": \"user not found\" }")
     else
-      println("log: get user $(r[1].email)")
-      return HTTP.Response(200, JSON2.write(r[1]))
+      println("log: get user $(USERS[r[1]].email)")
+      return HTTP.Response(200, JSON2.write(USERS[r[1]]))
     end
 end
 

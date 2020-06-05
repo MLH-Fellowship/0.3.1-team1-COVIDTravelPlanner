@@ -40,6 +40,7 @@ export default class CustomCard extends React.Component {
                         <Image
                             source={item.image}
                             style={imageStyles}
+                            resizeMode="cover"
                         />
                     </Block>
                 </TouchableWithoutFeedback>
@@ -52,11 +53,11 @@ export default class CustomCard extends React.Component {
                             color={argonTheme.COLORS.ACTIVE}>
                                 {item.time}
                         </Text>
-                        <Text size={25} style={styles.cardTitle} bold>
+                        <Text size={20} style={styles.cardTitle} bold>
                             {item.place}
                         </Text>
                         <Text
-                            size={20}
+                            size={18}
                             muted={!ctaColor}
                             color={item.color}
                             style={{
@@ -111,7 +112,7 @@ const styles = StyleSheet.create({
         // borderRadius: 3,
     },
     horizontalImage: {
-        height: 122,
+        height: 140,
         width: "auto",
     },
     horizontalStyles: {

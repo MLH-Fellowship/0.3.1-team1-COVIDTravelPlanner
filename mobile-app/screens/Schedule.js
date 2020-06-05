@@ -106,6 +106,35 @@ class Schedule extends React.Component {
         }
     }
 
+    componentDidMount() {
+        getData("token").then((token) => {
+            const data = {
+                token: parseFloat(token),
+            };
+            const url = HOST_URI + "/api/v1/schedule/list/"
+            return axios({
+                url: url,
+                method: "POST",
+                data: data,
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+        }).then((response) => {
+            this.setState({
+                schedule: this.parse(response.data)
+            })
+        }).catch((error) => {
+            console.log(error);
+            if (error) {
+                console.log(error.response);
+                if (error.response) {
+                    console.log(error.response.data);
+                }
+            }
+        });
+    }
+
     parse = (events) => {
         const today = new Date();
         const initial = new Array()
@@ -127,7 +156,7 @@ class Schedule extends React.Component {
             }
             const nextWeek = new Date();
             nextWeek.setDate(today.getDate() + 6);
-            if (startDate < today || startDate > nextWeek) {
+            if (endDate < today || startDate > nextWeek) {
                 continue;
             }
 
@@ -158,6 +187,7 @@ class Schedule extends React.Component {
             temp.events = initial[i];
             finalData.push(temp);
         }
+        console.log(finalData);
         return finalData;
 
     }
@@ -231,7 +261,7 @@ class Schedule extends React.Component {
                                 paddingHorizontal: theme.SIZES.BASE / 2,
                             }}>
                             {
-                                dummyData.map((item, index) =>
+                                this.state.schedule.map((item, index) =>
                                     this.renderProduct(item, index)
                                 )}
                         </ScrollView>

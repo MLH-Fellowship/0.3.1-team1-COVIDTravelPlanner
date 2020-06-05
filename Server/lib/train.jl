@@ -121,7 +121,7 @@ end
 prediction(state::String, district::String, day_num::Int64) =
     prediction(state, district, [day_num])
 
-function prediction(state::String, district::String, day_num::Vector{Int})
+function prediction(state::String, district::String, day_num::Vector{Int64})
     filepath = joinpath(@__DIR__, "../data/" * format_string(state) * "_" * format_string(district) * ".bson")
     if !isfile(filepath)
         return nothing

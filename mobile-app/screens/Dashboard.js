@@ -1,4 +1,7 @@
 import React from "react";
+import axios from "axios";
+import { HOST_URI } from "../constants/data";
+import { storeData, getData } from "../navigation/storage";
 import {
     StyleSheet,
     Dimensions,
@@ -15,12 +18,128 @@ import { HeaderHeight } from "../constants/utils";
 
 import CustomCard from "../components/CustomCard";
 import MapImg from "../assets/imgs/map.png"
+import { SEVERITY, COLOR_CODES } from "../constants/data";
 
 const { width, height } = Dimensions.get("screen");
 
 const thumbMeasure = (width - 48 - 32) / 3;
 
+function splitDate(date) {
+    const timestr = date.toTimeString().split(" ")[0];
+    const out = timestr.split(":")[0] + ":" + timestr.split(":")[1];
+    return out;
+}
+
 class Profile extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            name: "",
+            email: "",
+            now: null,
+        };
+    }
+
+    componentDidMount() {
+        getData("token")
+            .then((token) => {
+                const data = {
+                    token: parseFloat(token),
+                };
+                const url = HOST_URI + "/api/v1/user/";
+                return axios({
+                    url: url,
+                    method: "POST",
+                    data: data,
+                    headers: {
+                        "Content-Type": "application.json",
+                    },
+                });
+            })
+            .then((response) => {
+                this.setState({
+                    name: response.data.name,
+                    email: response.data.email,
+                });
+            })
+            .catch((error) => {
+                console.log(error);
+                if (error) {
+                    console.log(error.response);
+                    if (error.response) {
+                        console.log(error.response.data);
+                    }
+                }
+            });
+
+        getData("token")
+            .then((token) => {
+                const data = {
+                    token: parseFloat(token),
+                };
+                const url = HOST_URI + "/api/v1/schedule/list/";
+                return axios({
+                    url: url,
+                    method: "POST",
+                    data: data,
+                    headers: {
+                        "Content-Type": "application.json",
+                    },
+                });
+            })
+            .then((response) => {
+                this.setState({
+                    now: this.parse(response.data),
+                });
+            })
+            .catch((error) => {
+                console.log(error);
+                if (error) {
+                    console.log(error.response);
+                    if (error.response) {
+                        console.log(error.response.data);
+                    }
+                }
+            });
+    }
+
+    parse = (events) => {
+        const today = new Date();
+        
+        for (let event of events) {
+            const startDate = new Date(event.starttime);
+            const endDate = new Date(event.endtime);
+
+            if (
+                startDate.getDate() !== endDate.getDate() ||
+                startDate.getMonth() !== endDate.getMonth() ||
+                startDate.getFullYear() !== endDate.getFullYear()
+            ) {
+                continue;
+            }
+            if (today < startDate || today > endDate) {
+                continue;
+            }
+
+            const temp = {};
+            temp.time = splitDate(startDate) + " - " + splitDate(endDate);
+            temp.place =
+                event.place.split("_")[1] + ", " + event.place.split("_")[0];
+            temp.severity = event.prediction;
+            temp.image = MapImg;
+            if (event.prediction < SEVERITY.MEDIUM) {
+                temp.color = COLOR_CODES.LOW;
+            } else if (event.prediction < SEVERITY.HIGH) {
+                temp.color = COLOR_CODES.MEDIUM;
+            } else {
+                temp.color = COLOR_CODES.HIGH;
+            }
+            return temp;
+        }
+
+        return null;
+    };
+
     render() {
         return (
             <Block flex style={styles.profile}>
@@ -30,7 +149,7 @@ class Profile extends React.Component {
                         style={styles.profileContainer}
                         imageStyle={styles.profileBackground}>
                         <ScrollView
-                            contentContainerStyle={{flexGrow: 1}}
+                            contentContainerStyle={{ flexGrow: 1 }}
                             showsVerticalScrollIndicator={false}
                             style={{ width, paddingTop: 20 }}>
                             <Block flex style={styles.profileCard}>
@@ -40,17 +159,20 @@ class Profile extends React.Component {
                                         style={styles.avatar}
                                     />
                                 </Block>
-                                
+
                                 <Block flex>
                                     <Block middle style={styles.nameInfo}>
                                         <Text bold size={28} color="#32325D">
-                                            Jessica Jones
+                                            {this.state.name}
                                         </Text>
                                         <Text
                                             size={16}
                                             color="#32325D"
-                                            style={{ marginTop: 10, fontStyle: 'italic' }}>
-                                            jessica.jones@example.com
+                                            style={{
+                                                marginTop: 10,
+                                                fontStyle: "italic",
+                                            }}>
+                                            {this.state.email}
                                         </Text>
                                     </Block>
                                     <Block
@@ -61,7 +183,7 @@ class Profile extends React.Component {
                                         }}>
                                         <Block style={styles.divider} />
                                     </Block>
-                                    
+
                                     <Block
                                         row
                                         style={{
@@ -77,24 +199,19 @@ class Profile extends React.Component {
                                         style={{
                                             paddingVertical: 2,
                                         }}>
+                                        {this.state.now && (
                                             <CustomCard
                                                 horizontal={true}
-                                                item={{
-                                                    time: "3pm-5pm",
-                                                    place: "Delhi",
-                                                    severity: "~5",
-                                                    color: "#53CC9D",
-                                                    image: MapImg
-                                                }}/>
-                                        </Block>
+                                                item={this.state.now}
+                                            />
+                                        )}
+                                    </Block>
                                     <Block
                                         row
                                         style={{
                                             paddingBottom: 20,
                                             justifyContent: "flex-end",
-                                        }}>
-                                    </Block>
-                                    
+                                        }}></Block>
                                 </Block>
                             </Block>
                         </ScrollView>

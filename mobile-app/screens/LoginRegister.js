@@ -92,7 +92,7 @@ class LoginRegister extends React.Component {
         }).then((response) => {
             return storeData("token", response.data.token + '');
         }).then(() => {
-            // navigate
+            this.props.navigation.navigate("Home");
         }).catch((error) => {
             if (error) {
                 this.setState({

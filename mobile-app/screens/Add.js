@@ -145,7 +145,7 @@ export default class AddEvent extends React.Component {
             });
         }).then((response) => {
             console.log("done");
-            // navigate
+            this.props.navigation.navigate("Home");
         }).catch((error) => {
             console.log(error);
             if (error.response) {

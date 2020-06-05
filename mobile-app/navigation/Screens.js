@@ -4,6 +4,7 @@ import { Easing, Animated, Dimensions } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createSwitchNavigator, createAppContainer } from "react-navigation";
 
 import { Block } from "galio-framework";
 
@@ -31,13 +32,84 @@ const { width } = Dimensions.get("screen");
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
-const Tab = createBottomTabNavigator();
 
-function ElementsStack(props) {
+function HomeStack(props) {
     return (
         <Stack.Navigator mode="card" headerMode="screen">
             <Stack.Screen
-                name="Elements"
+                name="Home"
+                component={Dashboard}
+                options={{
+                    header: ({ navigation, scene }) => (
+                        <Header
+                            title="home"
+                            navigation={navigation}
+                            scene={scene}
+                        />
+                    ),
+                    cardStyle: { backgroundColor: "#F8F9FE" },
+                }}
+            />
+        </Stack.Navigator>
+    );
+}
+
+// const HomeStack = createStackNavigator({
+//     Home: {
+//         screen: Dashboard,
+//         navigationOptions: ({ navigation, scene }) => ({
+//             header: <Header title="Home" navigation={navigation} scene={scene} />
+//         }),
+//     },
+// }, {
+//         cardStyle: { backgroundColor: "#F8F9FE" },
+// });
+
+// const AddStack = createStackNavigator(
+//     {
+//         AddEvent: {
+//             screen: AddEvent,
+//             navigationOptions: ({ navigation, scene }) => ({
+//                 header: (
+//                     <Header
+//                         title="Add Event"
+//                         navigation={navigation}
+//                         scene={scene}
+//                     />
+//                 ),
+//             }),
+//         },
+//     },
+//     {
+//         cardStyle: { backgroundColor: "#F8F9FE" },
+//     }
+// );
+
+// const ScheduleStack = createStackNavigator(
+//     {
+//         Schedule: {
+//             screen: Schedule,
+//             navigationOptions: ({ navigation, scene }) => ({
+//                 header: (
+//                     <Header
+//                         title="Your Schedule"
+//                         navigation={navigation}
+//                         scene={scene}
+//                     />
+//                 ),
+//             }),
+//         },
+//     },
+//     {
+//         cardStyle: { backgroundColor: "#F8F9FE" },
+//     }
+// );
+
+function AddStack(props) {
+    return (
+        <Stack.Navigator mode="card" headerMode="screen">
+            <Stack.Screen
+                name="AddEvent"
                 component={AddEvent}
                 options={{
                     header: ({ navigation, scene }) => (
@@ -50,78 +122,19 @@ function ElementsStack(props) {
                     cardStyle: { backgroundColor: "#F8F9FE" },
                 }}
             />
-            <Stack.Screen
-                name="Pro"
-                component={Pro}
-                options={{
-                    header: ({ navigation, scene }) => (
-                        <Header
-                            title=""
-                            back
-                            white
-                            transparent
-                            navigation={navigation}
-                            scene={scene}
-                        />
-                    ),
-                    headerTransparent: true,
-                }}
-            />
         </Stack.Navigator>
     );
 }
-
-function ArticlesStack(props) {
+function ScheduleStack(props) {
     return (
         <Stack.Navigator mode="card" headerMode="screen">
             <Stack.Screen
-                name="Articles"
-                component={Articles}
-                options={{
-                    header: ({ navigation, scene }) => (
-                        <Header
-                            title="Articles"
-                            navigation={navigation}
-                            scene={scene}
-                        />
-                    ),
-                    cardStyle: { backgroundColor: "#F8F9FE" },
-                }}
-            />
-            <Stack.Screen
-                name="Pro"
-                component={Pro}
-                options={{
-                    header: ({ navigation, scene }) => (
-                        <Header
-                            title=""
-                            back
-                            white
-                            transparent
-                            navigation={navigation}
-                            scene={scene}
-                        />
-                    ),
-                    headerTransparent: true,
-                }}
-            />
-        </Stack.Navigator>
-    );
-}
-
-function ProfileStack(props) {
-    return (
-        <Stack.Navigator
-            initialRouteName="Profile"
-            mode="card"
-            headerMode="screen">
-            <Stack.Screen
-                name="Profile"
+                name="Schedule"
                 component={Schedule}
                 options={{
                     header: ({ navigation, scene }) => (
                         <Header
-                            title="Schedule"
+                            title="Your Schedule"
                             navigation={navigation}
                             scene={scene}
                         />
@@ -129,79 +142,49 @@ function ProfileStack(props) {
                     cardStyle: { backgroundColor: "#F8F9FE" },
                 }}
             />
-            <Stack.Screen
-                name="Pro"
-                component={Pro}
-                options={{
-                    header: ({ navigation, scene }) => (
-                        <Header
-                            title=""
-                            back
-                            white
-                            transparent
-                            navigation={navigation}
-                            scene={scene}
-                        />
-                    ),
-                    headerTransparent: true,
-                }}
-            />
         </Stack.Navigator>
     );
 }
 
-function HomeStack(props) {
-    return (
-        <Stack.Navigator mode="card" headerMode="screen">
-            <Stack.Screen
-                name="Home"
-                component={Dashboard}
-                options={{
-                    header: ({ navigation, scene }) => (
-                        <Header
-                            title="Home"
-                            navigation={navigation}
-                            scene={scene}
-                        />
-                    ),
-                    cardStyle: { backgroundColor: "#F8F9FE" },
-                }}
-            />
-            <Stack.Screen
-                name="Pro"
-                component={Pro}
-                options={{
-                    header: ({ navigation, scene }) => (
-                        <Header
-                            title=""
-                            back
-                            white
-                            transparent
-                            navigation={navigation}
-                            scene={scene}
-                        />
-                    ),
-                    headerTransparent: true,
-                }}
-            />
-        </Stack.Navigator>
-    );
-}
-
-export default function OnboardingStack(props) {
-    return (
-        <Stack.Navigator mode="card" headerMode="none">
-            <Stack.Screen
-                name="Onboarding"
-                component={Onboarding}
-                option={{
-                    headerTransparent: true,
-                }}
-            />
-            <Stack.Screen name="App" component={AppStack} />
-        </Stack.Navigator>
-    );
-}
+// const AppStack = createDrawerNavigator({
+//     Home: {
+//         screen: HomeStack
+//     },
+//     AddEvent: {
+//         screen: AddStack
+//     },
+//     Schedule: {
+//         screen: ScheduleStack
+//     }
+// }, {
+//     style: { flex: 1 },
+//     drawerContent: (props) => <CustomDrawerContent {...props} />,
+//     drawerStyle:{
+//         backgroundColor: "white",
+//         width: width * 0.8,
+//     },
+//     drawerContentOptions: {
+//         activeTintcolor: "white",
+//         inactiveTintColor: "#000",
+//         activeBackgroundColor: "transparent",
+//         itemStyle: {
+//             width: width * 0.75,
+//             backgroundColor: "transparent",
+//             paddingVertical: 16,
+//             paddingHorizonal: 12,
+//             justifyContent: "center",
+//             alignContent: "center",
+//             alignItems: "center",
+//             overflow: "hidden",
+//         },
+//         labelStyle: {
+//             fontSize: 18,
+//             marginLeft: 12,
+//             fontWeight: "normal",
+//         },
+//     },
+//     initialRouteName: "Home" 
+// });
 
 function AppStack(props) {
     return (
@@ -232,12 +215,37 @@ function AppStack(props) {
                     fontWeight: "normal",
                 },
             }}
-            initialRouteName="Home">
+            initialRouteName="Login">
+            <Drawer.Screen name="Login" component={LoginRegister} />
             <Drawer.Screen name="Home" component={HomeStack} />
-            <Drawer.Screen name="Profile" component={ProfileStack} />
-            <Drawer.Screen name="Account" component={LoginRegister} />
-            <Drawer.Screen name="Elements" component={ElementsStack} />
-            <Drawer.Screen name="Articles" component={ArticlesStack} />
+            <Drawer.Screen name="AddEvent" component={AddStack} />
+            <Drawer.Screen name="Schedule" component={ScheduleStack} />
         </Drawer.Navigator>
+    );
+}
+
+// const RootStack = createSwitchNavigator({
+//     Login: LoginRegister,
+//     App: AppStack,
+// }, {
+//     initialRouteName: "Login",
+// });
+
+// export default AppContainer = createAppContainer(RootStack);
+
+// export default function OnboardingStack(props) {
+//     return (
+//         <Switch.Navigator initialRouteName="Login">
+//             <Switch.Screen name="Login" component={LoginRegister}/>
+//             <Switch.Screen name="App" component={AppStack}/>
+//         </Switch.Navigator>
+//     );
+// }
+
+export default function OnboardingStack(props) {
+    return (
+        <Stack.Navigator mode="card" headerMode="none">
+            <Stack.Screen name="App" component={AppStack} />
+        </Stack.Navigator>
     );
 }

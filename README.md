@@ -99,7 +99,10 @@ Basically, you can get the predictions for any day in the next week. The functio
 ### Model Description
 
 We model our Differential Equations as follows using the DifferentialEquations.jl packages
-![webapp](Screenshots/sir.png)
+
+<p align="center">
+  <img width="460" height="300" src="Screenshots/sir.png">
+</p>
 
 We draw inspiration from the previous works [1] and [2]. We use a multilayer perceptron to parameterize the differential equations
 and using backpropogation through the solver we are able to learn the parameters in an end-to-end manner. To learn to predict the case
